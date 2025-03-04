@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment for Charles University Entrance Exam</title>
+    <script>
+        // Load PayPal SDK dynamically
+        let script = document.createElement("script");
+        script.src = "https://www.paypal.com/sdk/js?client-id=AeByKFwIdsbccMBpX045m9m-tVdQb4f9bJq6L3n8WfNuEy7cD_9ELMc1JzuZL9zaS1nNK2fGsLZ6uMBq&currency=USD";
+        script.onload = function() {
+            console.log("PayPal SDK Loaded!");
+            if (typeof paypal !== "undefined") {
+                loadPayPalButtons();
+            } else {
+                console.error("PayPal SDK failed to initialize.");
+            }
+        };
+        script.onerror = function() {
+            console.error("Failed to load PayPal SDK!");
+        };
+        document.head.appendChild(script);
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, #007bff, #00c6ff);
+            color: white;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+        h2, h3 {
+            color: #007bff;
+        }
+        .paypal-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Charles University Entrance Exam Payment</h2>
+        <p>Proceed with the payment to complete your registration. The fee is $250.</p>
+        <div class="paypal-container" id="paypal-button-container"></div>
+    </div>
+
+    <script>
+        function loadPayPalButtons() {
+            if (typeof paypal === "undefined") {
+                console.error("PayPal SDK failed to load!");
+                return;
+            }
+
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                value: '250.00'
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        const userDetails = JSON.parse(localStorage.getItem("userDetails")) || {};
+
+                        // Here you would typically send the registration data and payment info to your server
+                        fetch('/submit-registration', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ ...userDetails, transactionID: details.id })
+                        }).then(response => response.json())
+                          .then(data => console.log("Registration saved:", data))
+                          .catch(error => console.error("Error saving registration:", error));
+
+                        alert("Transaction completed by " + details.payer.name.given_name);
+                        // Redirect to the thank-you page after successful payment
+                        window.location.href = 'thank-you.html'; // Redirect to a thank you page
+                    });
+                },
+                onError: function(err) {
+                    console.error("Payment failed", err);
+                    alert("Payment failed. Please check your PayPal account or try again.");
+                }
+            }).render('#paypal-button-container');
+        }
+    </script>
+</body>
+</html>
