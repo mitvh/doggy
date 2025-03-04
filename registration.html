@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charles University Entrance Exam Registration</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(to right, #007bff, #00c6ff);
+            color: white;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+        h2, h3 {
+            color: #007bff;
+        }
+        form {
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Charles University Entrance Exam</h2>
+        <p>Register now for the entrance exam and secure your spot!</p>
+        <form id="registrationForm" enctype="multipart/form-data">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name" required>
+            
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+            
+            <label for="passport">Passport Number</label>
+            <input type="text" id="passport" placeholder="Enter your passport number" required>
+            
+            <!-- Passport document upload field -->
+            <label for="passportDocument">Upload Passport Document</label>
+            <input type="file" id="passportDocument" accept=".jpg,.jpeg,.png,.pdf" required>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const passport = document.getElementById('passport').value;
+            const passportDocument = document.getElementById('passportDocument').files[0];
+            
+            if (name && email && passport && passportDocument) {
+                // Saving user details to localStorage
+                const formData = new FormData();
+                formData.append("name", name);
+                formData.append("email", email);
+                formData.append("passport", passport);
+                formData.append("passportDocument", passportDocument);
+
+                // Store details temporarily
+                localStorage.setItem("userDetails", JSON.stringify({ name, email, passport, passportDocument }));
+
+                // Redirect to payment page
+                window.location.href = 'payment.html'; // Automatically redirect to payment page
+            } else {
+                alert('Please fill in all fields and upload your passport document.');
+            }
+        });
+        
+        document.getElementById('passport').addEventListener('input', function() {
+            this.value = this.value.toUpperCase().trim();
+        });
+    </script>
+</body>
+</html>
